@@ -3,4 +3,4 @@ dodo.py
 new.sh
 result.py
 .idea/
-_pycache_/
+__pycache__/
