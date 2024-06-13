@@ -46,39 +46,39 @@ def print_result(learn_type='ultraue'
         active_num, inactive_num = extract_numbers(
             f'./log/{del_per}_{dataset}_{model_type}_{learn_type}_{del_type}_{groups}.txt')
 
-        # active_num, inactive_num = extract_numbers(
-        #     f'./log/{dataset}_{model_type}_{learn_type}_{del_type}.txt')
-
-        # print(active_num)
-        # print(inactive_num)
-        for i in range(groups):
-            result = np.load(
-                f'results/{learn_type}/group{i + 1}_{groups}_{model_type}_{dataset}_{del_type}_{del_per}.npy',
-                allow_pickle=True).item()
-            # result = np.load(
-            #     f'results/{learn_type}/group{i + 1}_{model_type}_{dataset}_{del_type}.npy',
-            #     allow_pickle=True).item()
-            ndcgs.append(result['ndcg'])
-            hrs.append(result['hr'])
-            active_ndcgs.append(result['active_ndcg'])
-            inactive_ndcgs.append(result['inactive_ndcg'])
-            times.append(result['time'])
-
-        ndcg = np.mean(ndcgs)
-        hr = np.mean(hrs)
-        var = np.var(ndcgs)
-        time = np.mean(times)
-        active_ndcg = 0
-        inactive_ndcg = 0
-        for i in range(groups):
-            active_ndcg += (active_num[i] * active_ndcgs[i])
-            inactive_ndcg += (inactive_num[i] * inactive_ndcgs[i])
-
-        active_num = np.sum(active_num)
-        active_ndcg = active_ndcg / active_num
-        inactive_num = np.sum(inactive_num)
-        inactive_ndcg = inactive_ndcg / inactive_num
-        fairness = active_ndcg - inactive_ndcg
+        # # active_num, inactive_num = extract_numbers(
+        # #     f'./log/{dataset}_{model_type}_{learn_type}_{del_type}.txt')
+        #
+        # # print(active_num)
+        # # print(inactive_num)
+        # for i in range(groups):
+        #     result = np.load(
+        #         f'results/{learn_type}/group{i + 1}_{groups}_{model_type}_{dataset}_{del_type}_{del_per}.npy',
+        #         allow_pickle=True).item()
+        #     # result = np.load(
+        #     #     f'results/{learn_type}/group{i + 1}_{model_type}_{dataset}_{del_type}.npy',
+        #     #     allow_pickle=True).item()
+        #     ndcgs.append(result['ndcg'])
+        #     hrs.append(result['hr'])
+        #     active_ndcgs.append(result['active_ndcg'])
+        #     inactive_ndcgs.append(result['inactive_ndcg'])
+        #     times.append(result['time'])
+        #
+        # ndcg = np.mean(ndcgs)
+        # hr = np.mean(hrs)
+        # var = np.var(ndcgs)
+        # time = np.mean(times)
+        # active_ndcg = 0
+        # inactive_ndcg = 0
+        # for i in range(groups):
+        #     active_ndcg += (active_num[i] * active_ndcgs[i])
+        #     inactive_ndcg += (inactive_num[i] * inactive_ndcgs[i])
+        #
+        # active_total_num = np.sum(active_num)
+        # active_ndcg = active_ndcg / active_total_num
+        # inactive_total_num = np.sum(inactive_num)
+        # inactive_ndcg = inactive_ndcg / inactive_total_num
+        # fairness = active_ndcg - inactive_ndcg
 
     # print('NDCG:', ndcg)
     # print('HR:', hr)
@@ -88,17 +88,24 @@ def print_result(learn_type='ultraue'
 
     # print(ndcgs)
 
-    print(ndcg)
-    print(hr)
-    print(fairness)
-    print(var)
-    print(time)
+    # print(ndcg)
+    # print(hr)
+    # print(fairness)
+    # print(var)
+    # print(time)
+    for i in range(5):
+        print(active_num[i])
+        print(inactive_num[i])
+    print(" --------------")
+    for i in range(5,10):
+        print(active_num[i])
+        print(inactive_num[i])
 
 
 if __name__ == '__main__':
-    learn_type = 'sisa'
+    learn_type = 'ultraue'
     model_type = 'bpr'
-    dataset = 'gowalla'
+    dataset = 'adm'
     del_type = 'core'
     del_per = 5
     groups = 10
@@ -110,3 +117,4 @@ if __name__ == '__main__':
                      del_type=i,
                      del_per=del_per,
                      groups=groups)
+        print('dfsdfgdfsfsdfds')

@@ -5,16 +5,16 @@ import numpy as np
 from config import InsParam, Instance
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--dataset', type=str, default='ml-1m', help='dataset name')
+parser.add_argument('--dataset', type=str, default='ml-100k', help='dataset name')
 parser.add_argument('--epoch', type=int, default=50, help='number of epochs')
 parser.add_argument('--worker', type=int, default=8, help='number of CPU workers')
 parser.add_argument('--verbose', type=int, default=2, help='verbose type')
-parser.add_argument('--group', type=int, default=5, help='number of groups')
+parser.add_argument('--group', type=int, default=10, help='number of groups')
 parser.add_argument('--layer', nargs='+', default=[64, 32], help='setting of layers')
 parser.add_argument('--learn', type=str, default='sisa', help='type of learning and unlearning')
 parser.add_argument('--delper', type=int, default=5, help='deleted user proportion')
 parser.add_argument('--deltype', type=str, default='random', help='unlearn data selection')
-parser.add_argument('--model', type=str, default='mf', help='rec model')
+parser.add_argument('--model', type=str, default='wmf', help='rec model')
 
 
 # this is an example of main
@@ -22,7 +22,7 @@ def main():
     # read parser
     args = parser.parse_args()
 
-    assert args.model in ['mf', 'dmf', 'bpr', 'lightgcn']
+    assert args.model in ['wmf', 'dmf', 'bpr', 'gmf', 'nmf']
     model = args.model
 
     assert args.dataset in ['ml-100k', 'ml-1m', 'adm', 'gowalla']
@@ -50,7 +50,7 @@ def main():
         assert type(i) == int
     layers = args.layer
 
-    assert args.learn in ['retrain','sisa','receraser','ultraue']
+    assert args.learn in ['retrain', 'sisa', 'receraser', 'ultrare']
     learn_type = args.learn
 
     assert args.delper >= 0

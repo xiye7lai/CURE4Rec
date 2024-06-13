@@ -6,8 +6,8 @@ from torch import nn
 from torch import optim
 import torch
 
-from utils import seed_all, baseTrain, baseTest, LightGCN
-from utils import MF, DMF, GMF, NMF, BPR
+from utils import seed_all, baseTrain, baseTest
+from utils import WMF, DMF, GMF, NMF, BPR
 
 
 class Scratch(object):
@@ -36,7 +36,7 @@ class Scratch(object):
                     'total_hr': [],
                     'time': []}
 
-        if self.model_type in ['mf']:
+        if self.model_type in ['wmf']:
             self.loss_fn = 'point-wise'
             # self.loss_fn = nn.MSELoss(reduction='sum')
             # self.is_rmse = True
@@ -51,9 +51,6 @@ class Scratch(object):
             self.loss_fn = 'point-wise'
             self.is_rmse = False
 
-        elif self.model_type == 'lightgcn':
-            self.loss_fn = 'gcn_bpr_loss'
-
     def train(self, train_data, test_data, active_test_data, inactive_test_data, verbose=2, save_dir='',
               id=0, given_model=''):
         print('Using device:', self.device)
@@ -62,8 +59,8 @@ class Scratch(object):
 
         # build model
         if given_model == '':
-            if self.model_type == 'mf':
-                model = MF(self.n_user, self.n_item, self.k).to(self.device)
+            if self.model_type == 'wmf':
+                model = WMF(self.n_user, self.n_item, self.k).to(self.device)
             elif self.model_type == 'bpr':
                 model = BPR(self.n_user, self.n_item, self.k).to(self.device)
             elif self.model_type == 'gmf':
@@ -72,8 +69,6 @@ class Scratch(object):
                 model = NMF(self.n_user, self.n_item, self.k, self.layers).to(self.device)
             elif self.model_type == 'dmf':
                 model = DMF(self.n_user, self.n_item, self.k, self.layers).to(self.device)
-            elif self.model_type == 'lightgcn':
-                model = LightGCN(self.n_user, self.n_item).to(self.device)
         else:
             model = given_model.to(self.device)
 
@@ -103,9 +98,6 @@ class Scratch(object):
             total_time += train_time
             user_mapping = None
             pos_mapping = None
-            if self.model_type == 'lightgcn':
-                user_mapping = train_data.dataset.user_mapping
-                pos_mapping = train_data.dataset.pos_mapping
 
             test_ndcg, test_hr = baseTest(test_data, model, self.loss_fn, self.device, verbose, pos_dict, self.n_item,
                                           20,user_mapping,pos_mapping)
@@ -151,7 +143,7 @@ class Scratch(object):
                                               self.n_item,
                                               20,user_mapping,pos_mapping)
         print('inactive_test_ndcg:', inactive_ndcg)
-        print('best:!!!!!!!!!!!!!!!')
+        print('-------best--------')
         result = {'time': total_time, 'ndcg': best_ndcg, 'hr': best_hr, 'active_ndcg': active_ndcg,
                   'active_hr': active_hr, 'inactive_ndcg': inactive_ndcg, 'inactive_hr': inactive_hr}
 

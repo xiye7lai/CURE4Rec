@@ -73,12 +73,8 @@ def readRating_group(train_dir, test_dir, del_type='random', del_per=5, learn_ty
 
     active_users = user_counts.index[:num_active_users].tolist()
     inactive_users = user_counts.index[num_active_users:].tolist()
-    # test set
 
     if learn_type == 'sisa':
-        # random choice
-        # ratings = ratings.sample(frac=1).reset_index(drop=True)
-        # random.seed(42)
 
         unique_users = train_ratings['uid'].unique()
         random.shuffle(unique_users)
@@ -96,16 +92,12 @@ def readRating_group(train_dir, test_dir, del_type='random', del_per=5, learn_ty
                               user_groups]
     elif learn_type == 'receraser':
         start_time = time.time()
-        # 加载用户嵌入
-        user_embeddings = np.load(f'results/user_emb/{dataset}_mf_emb.npy', allow_pickle=True).item()
-        # 获取所有用户的唯一ID
+        user_embeddings = np.load(f'results/user_emb/{dataset}_wmf_emb.npy', allow_pickle=True).item()
         unique_users = train_ratings['uid'].unique()
-        # 提取用户嵌入矩阵
         user_mat = np.array([user_embeddings[user_id][0] for user_id in unique_users])
 
         _, labels = kmeans(user_mat, num_groups, True, 30)
 
-        # 创建用户分组
         user_groups = [[] for _ in range(num_groups)]
         for user_id, label in zip(unique_users, labels):
             user_groups[int(label)].append(user_id)
@@ -117,18 +109,15 @@ def readRating_group(train_dir, test_dir, del_type='random', del_per=5, learn_ty
 
         print(f'Grouping time: {time.time() - start_time}')
 
-    elif learn_type == 'ultraue':
+    elif learn_type == 'ultrare':
         start_time = time.time()
-        # 加载用户嵌入
-        user_embeddings = np.load(f'results/user_emb/{dataset}_mf_emb.npy', allow_pickle=True).item()
-        # 获取所有用户的唯一ID
+        user_embeddings = np.load(f'results/user_emb/{dataset}_wmf_emb.npy', allow_pickle=True).item()
         unique_users = train_ratings['uid'].unique()
-        # 提取用户嵌入矩阵
         user_mat = np.array([user_embeddings[user_id][0] for user_id in unique_users])
 
         _, labels = ot_cluster(user_mat, num_groups)
 
-        # 创建用户分组
+
         user_groups = [[] for _ in range(num_groups)]
         for user_id, label in zip(unique_users, labels):
             user_groups[int(label)].append(user_id)
@@ -140,17 +129,14 @@ def readRating_group(train_dir, test_dir, del_type='random', del_per=5, learn_ty
 
         print(f'Grouping time: {time.time() - start_time}')
 
-    # 初始化保存active和inactive ratings的列表
     active_groups = []
     inactive_groups = []
 
-    # 生成每组中的active_rating和inactive_rating
     for i, ratings in enumerate(test_rating_groups):
         active_ratings = ratings[ratings['uid'].isin(active_users)].reset_index(drop=True)
         inactive_ratings = ratings[ratings['uid'].isin(inactive_users)].reset_index(drop=True)
         active_groups.append(active_ratings)
         inactive_groups.append(inactive_ratings)
-        # 输出每组的active user和inactive user的个数
         print(f"Group {i + 1} active users: {len(active_ratings['uid'].unique())}")
         print(f"Group {i + 1} inactive users: {len(inactive_ratings['uid'].unique())}")
 

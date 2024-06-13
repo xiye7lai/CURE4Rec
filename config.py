@@ -14,7 +14,7 @@ SAVE_DIR = abspath(join(dirname(__file__), 'result'))
 
 
 class InsParam(object):
-    def __init__(self, dataset='toy', model='mf', epochs=50, n_worker=24, layers=[32], n_group=5, del_per=5,
+    def __init__(self, dataset='ml-100k', model='wmf', epochs=50, n_worker=24, layers=[32], n_group=10, del_per=5,
                  learn_type='retrain',
                  del_type='random'):
         # model param
@@ -101,18 +101,19 @@ class Instance(object):
         else:
             train_rating, test_rating, active_rating, inactive_rating = readRating_group(self.param.train_dir,
                                                                                          self.param.test_dir, del_type,
-                                                                                         del_per, learn_type, group,self.param.dataset)
+                                                                                         del_per, learn_type, group,
+                                                                                         self.param.dataset)
 
         return train_rating, test_rating, active_rating, inactive_rating
 
-    def runModel(self, model_type='dmf', verbose=2):
+    def runModel(self, model_type='wmf', verbose=2):
         print(self.name, 'begin:')
         # read raw data
         train_rating, test_rating, active_rating, inactive_rating = self.read()
 
         if self.param.learn_type == 'retrain':
             # load data
-            if model_type == 'mf' or model_type == 'dmf':
+            if model_type in ['wmf', 'dmf', 'gmf', 'nmf']:
                 train_data = loadData(RatingData(train_rating), self.param.batch,
                                       self.param.n_worker,
                                       True)
@@ -133,14 +134,15 @@ class Instance(object):
                                         given_model='')
             result.update({'model': model_type, 'dataset': self.param.dataset, 'deltype': self.param.del_type,
                            'method': self.param.learn_type})
-            np.save(f'results/{self.param.learn_type}/{model_type}_{self.param.dataset}_{self.param.del_type}_{self.param.del_per}.npy',
-                    result)
+            np.save(
+                f'results/{self.param.learn_type}/{model_type}_{self.param.dataset}_{self.param.del_type}_{self.param.del_per}.npy',
+                result)
             print('End of training', self.name)
         else:
             group = self.param.n_group
             for i in range(group):
                 # load data
-                if model_type == 'mf' or model_type == 'dmf':
+                if model_type in ['wmf', 'dmf', 'gmf', 'nmf']:
                     train_data = loadData(RatingData(train_rating[i]), self.param.batch,
                                           self.param.n_worker,
                                           True)
@@ -171,31 +173,4 @@ class Instance(object):
                 print(f'End of Group {str(i + 1)} / {group} training', self.name)
 
     def run(self, verbose=2):
-        '''model MF'''
-        # full train without deletion
         self.runModel(self.param.model, verbose)
-
-        # retrain from scratch after deletion
-        # self.__full(is_save, 'MF_retrain', 'mf', True, verbose)
-
-        '''model DMF'''
-        # full train without deletion
-        # self.__full(is_save, 'DMF_full_train', 'dmf', False, verbose)
-
-        # retrain from scratch after deletion
-        # self.__full(is_save, 'DMF_retrain', 'dmf', True, verbose)
-
-        '''model NMF'''
-        # full train without deletion
-        # s_time = time.time()
-        # self.__full(is_save, 'NMF_full_train', 'nmf', False, verbose)
-        # e_time = time.time()
-        # print(e_time - s_time)
-
-        # retrain from scratch after deletion
-        # s_time = time.time()
-        # self.__full(is_save, 'NMF_retrain', 'nmf', True, verbose)
-        # e_time = time.time()
-        # print(e_time - s_time)
-        '''test model'''
-        # self.__full(is_save, 'GMF_full_train', 'gmf', False, verbose)
