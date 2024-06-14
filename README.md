@@ -1,4 +1,4 @@
-# CURE4Rec: A Benchmark for Recommendation Unlearning with Deeper Influence
+# <center> CURE4Rec: A Benchmark for Recommendation Unlearning with Deeper Influence </center>
 
 [comment]: <> ([![License: MIT]&#40;https://img.shields.io/badge/License-MIT-yellow.svg&#41;]&#40;LICENSE&#41;)
 <div align="center">
@@ -12,6 +12,9 @@
     <img src="https://img.shields.io/github/stars/xiye7lai/CURE4Rec" alt="GitHub stars">
   </a>
 </div>
+
+
+<br>
 
 <table align="center">
   <tr>
