@@ -267,7 +267,6 @@ def baseTrain(dataloader, model, loss_fn, opt, device, verbose):
 # torch test
 def baseTest(dataloader, model, loss_fn, device, verbose, pos_dict, n_items, top_k=20, user_mapping=None,
              pos_mapping=None):
-
     model.eval()
 
     full_items = [i for i in range(n_items)]
@@ -416,3 +415,59 @@ def ot_cluster(X, k, max_iters=10):
 
         centroid = new_centroid
     return inertia, label  # , centroids
+
+
+def aggregation(model_list, train_dlist, test_dlist, test_data, verbose, save_dir):
+    '''
+            train_dlist:   list of dataloader[n_group]
+            '''
+    self.model_list = model_list
+
+    assert len(train_dlist) == self.n_group
+    assert len(test_dlist) == self.n_group
+
+    # find deletion
+    retrain_gid = set()
+    for user in del_user:
+        for i in range(self.n_group):
+            if user in self.group_index[i]:
+                retrain_gid.add(i)
+                break
+
+    # sisa retraining
+    model_before_unlearn = model_list[0]
+
+    for i in retrain_gid:
+        given_model = ''
+        model = super(Sisa, self).train(train_dlist[i], test_dlist[i], test_data, verbose, save_dir, i + 1,
+                                        given_model)
+        self.model_list[i] = model
+
+    # merge user mat
+    if self.model_type == "nmf":
+        weight_list1 = [m.user_mat_mf.weight.to(self.device) for m in self.model_list]
+        weight_list2 = [m.user_mat_mlp.weight.to(self.device) for m in self.model_list]
+        merged_weight1 = model_before_unlearn.user_mat_mf.weight.clone()
+        merged_weight2 = model_before_unlearn.user_mat_mlp.weight.clone()
+
+        for i in retrain_gid:
+            merged_weight1[self.group_index[i]] = weight_list1[i][self.group_index[i]]
+            merged_weight2[self.group_index[i]] = weight_list2[i][self.group_index[i]]
+
+        for m in self.model_list:
+            m.user_mat_mf.weight = nn.Parameter(merged_weight1)
+            m.user_mat_mlp.weight = nn.Parameter(merged_weight2)
+
+    else:
+        weight_list = [m.user_mat.weight.to(self.device) for m in self.model_list]
+        merged_weight = model_before_unlearn.user_mat.weight.clone()
+
+        for i in retrain_gid:
+            merged_weight[self.group_index[i]] = weight_list[i][self.group_index[i]]
+        for m in self.model_list:
+            m.user_mat.weight = nn.Parameter(merged_weight)
+
+    # total test
+    self.test(test_data, verbose, save_dir)
+
+    return self.model_list
