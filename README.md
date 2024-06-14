@@ -1,10 +1,17 @@
 # CURE4Rec: A Benchmark for Recommendation Unlearning with Deeper Influence
 
 [comment]: <> ([![License: MIT]&#40;https://img.shields.io/badge/License-MIT-yellow.svg&#41;]&#40;LICENSE&#41;)
-
-[![GitHub top language](https://img.shields.io/github/languages/top/xiye7lai/CURE4Rec)](https://github.com/xiye7lai/CURE4Rec)
-[![GitHub repo size](https://img.shields.io/github/repo-size/xiye7lai/CURE4Rec)](https://github.com/xiye7lai/CURE4Rec)
-[![GitHub stars](https://img.shields.io/github/stars/xiye7lai/CURE4Rec)](https://github.com/xiye7lai/CURE4Rec)
+<div align="center">
+  <a href="https://github.com/xiye7lai/CURE4Rec">
+    <img src="https://img.shields.io/github/languages/top/xiye7lai/CURE4Rec" alt="GitHub top language">
+  </a>
+  <a href="https://github.com/xiye7lai/CURE4Rec">
+    <img src="https://img.shields.io/github/repo-size/xiye7lai/CURE4Rec" alt="GitHub repo size">
+  </a>
+  <a href="https://github.com/xiye7lai/CURE4Rec">
+    <img src="https://img.shields.io/github/stars/xiye7lai/CURE4Rec" alt="GitHub stars">
+  </a>
+</div>
 
 <table align="center">
   <tr>
